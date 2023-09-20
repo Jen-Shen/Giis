@@ -22,14 +22,13 @@ def select_algorithm(algorithm):
     selected_algorithm = algorithm
 
 def load_data(filename):
-    with open(filename, 'r') as file:
-        data = file.readlines()
-
+    with open(filename, 'r') as file_obj:
+        data = file_obj.readlines()
+    file_obj.close()
     return data
 
 def toggle_debug_mode():
-    filename = file
-    data = load_data(filename)
+    data = load_data(file_name)
 
     root = tk.Tk()
     root.title("Data Viewer")
@@ -44,8 +43,8 @@ def toggle_debug_mode():
     root.mainloop()
 
 def dda_algorithm(canvas):
-    global file
-    file = "dda_algorithm_steps.txt"
+    global file_name
+    file_name = "dda_algorithm_steps.txt"
     x0, y0 = start_point
     x1, y1 = end_point
 
@@ -68,11 +67,11 @@ def dda_algorithm(canvas):
         canvas.create_rectangle(x, y, x + 1, y + 1, fill=LINE_COLOR)
         with open("dda_algorithm_steps.txt", "a") as file:
             file.write(f"Step {i}, x:{x}, y:{y}, Plot({x},{y})\n")
-    file.close()
+        file.close()
 
 def bresenham_algorithm(canvas):
-    global file
-    file = "bresenham_algorithm_steps.txt"
+    global file_name
+    file_name = "bresenham_algorithm_steps.txt"
 
     x0, y0 = start_point
     x1, y1 = end_point
@@ -106,11 +105,11 @@ def bresenham_algorithm(canvas):
             error += dx
         with open("bresenham_algorithm_steps.txt", "a") as file:
             file.write(f"Step {i}, e:{error}, x:{x}, y:{y}, Plot({x},{y})\n")
-    file.close()
+        file.close()
 
 def wu_algorithm(canvas):
-    global file
-    file = "wu_algorithm_steps.txt"
+    global file_name
+    file_name = "wu_algorithm_steps.txt"
     x1, y1 = start_point
     x2, y2 = end_point
 
@@ -140,15 +139,15 @@ def wu_algorithm(canvas):
             e += dy / dx
             a = abs(e)
             fill_color = "#%02x%02x%02x" % (int(a * 255), int(a * 255), int(a * 255))
-            if e <= 0:  # Исправлено: заменено условие e < 0 на e <= 0
+            if e <= 0:
                 canvas.create_rectangle(x - changeX, y - changeY, x - changeX + 1, y - changeY + 1, fill=fill_color, outline=fill_color)
             else:
                 canvas.create_rectangle(x + changeX, y + changeY, x + changeX + 1, y + changeY + 1, fill=fill_color, outline=fill_color)
-            print(f"Step {i}: e:{e}, x:{x}; y:{y}, a:{a} Plot({x},{y})")
+            #print(f"Step {i}: e:{e}, x:{x}; y:{y}, a:{a} Plot({x},{y})")
             i += 1
     else:
         e = dx / dy - 0.5
-        print(f"Step 0: x:{x}; y:{y}, e':{e} Plot({x},{y})")
+        #print(f"Step 0: x:{x}; y:{y}, e':{e} Plot({x},{y})")
         while i <= dy:
             if e >= 0:
                 x += changeX
@@ -162,11 +161,74 @@ def wu_algorithm(canvas):
                 canvas.create_rectangle(x - changeX, y - changeY, x - changeX + 1, y - changeY + 1, fill=fill_color, outline=fill_color)
             else:
                 canvas.create_rectangle(x + changeX, y + changeY, x + changeX + 1, y + changeY + 1, fill=fill_color, outline=fill_color)
-            print(f"Step {i}: e:{e}, x:{x}; y:{y}, a:{a} Plot({x},{y})")
+            #print(f"Step {i}: e:{e}, x:{x}; y:{y}, a:{a} Plot({x},{y})")
             with open("wu_algorithm_steps.txt", "a") as file:
                 file.write(f"Step {i}: e:{e}, x:{x}; y:{y}, a:{a} Plot({x},{y})\n")
             i += 1
         file.close()
+
+def find_radius(x1, y1, x2, y2):
+    r1 = x2 - x1
+    r2 = y2 - y1
+    l_max = max(abs(r1), abs(r2))
+    l_min = min(abs(r1), abs(r2))
+    return math.sqrt(pow(l_max, 2) + pow(l_min, 2))
+
+def draw_circle(x, origin_x, y, origin_y):
+
+        radius = 1
+        canvas.create_oval(x - radius + origin_x, y - radius + origin_y, x + radius + 1 + origin_x,
+                           y + radius + 1 + origin_y, fill="black")
+        canvas.create_oval(x - radius + origin_x, -y - radius + origin_y, x + radius + 1 + origin_x,
+                           -y + radius + 1 + origin_y, fill="black")
+        canvas.create_oval(-x - radius + origin_x, y - radius + origin_y, -x + radius + 1 + origin_x,
+                           y + radius + 1 + origin_y, fill="black")
+        canvas.create_oval(-x - radius + origin_x, -y - radius + origin_y, -x + radius + 1 + origin_x,
+                           -y + radius + 1 + origin_y, fill="black")
+
+def circle(canvas):
+    global file_name
+    file_name = "circle_steps.txt"
+
+    x1, y1 = start_point
+    x2, y2 = end_point
+    y = find_radius(x1, y1, x2, y2)
+
+    x = 0
+    radius = y
+
+    limit = y - radius
+
+    delta = 2 - 2 * radius
+
+    # Перемещение начала координат в центр холста
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+    origin_x = canvas_width // 2
+    origin_y = canvas_height // 2
+    i = 0
+    with open("circle_steps.txt", "a") as file:
+        while y > limit:
+            dz = 2 * delta - 2 * x - 1
+            if delta > 0 and dz > 0:
+                y -= 1
+                delta += 1 - 2 * y
+                draw_circle(x, origin_x, y, origin_y)
+                continue
+            d = 2 * delta + 2 * y - 1
+            if delta < 0 and d <= 0:
+                x += 1
+                delta += 1 + 2 * x
+                draw_circle(x, origin_x, y, origin_y)
+                continue
+            x += 1
+            y -= 1
+            delta += 2 * x - 2 * y + 2
+            draw_circle(x, origin_x, y, origin_y)
+            i = i + 1
+            file.write(f"Step {i}, e:{delta},d:{d},,d*{dz} x:{x+origin_x}, y:{y+origin_y}, Plot({x+origin_x},{y+origin_y})\n")
+    file.close()
+
 
 def handle_click(event):
     global start_point
@@ -184,6 +246,8 @@ def draw_line_based_on_algorithm(canvas):
         bresenham_algorithm(canvas)
     elif selected_algorithm == "Wu":
         wu_algorithm(canvas)
+    elif selected_algorithm == "circle":
+        circle(canvas)
 
 def main():
     global canvas, file
@@ -201,6 +265,9 @@ def main():
     dda_button.pack(side=tk.LEFT)
 
     dda_button = tk.Button(root, text="Ву", command=lambda: select_algorithm("Wu"))
+    dda_button.pack(side=tk.LEFT)
+
+    dda_button = tk.Button(root, text="Окружность", command=lambda: select_algorithm("circle"))
     dda_button.pack(side=tk.LEFT)
 
     debug_button = tk.Button(root, text="Отладка", command=toggle_debug_mode)
