@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
 import math
+
 # Window dimensions
 WIDTH = 800
 HEIGHT = 600
@@ -258,17 +259,20 @@ def main():
     canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg=BG_COLOR)
     canvas.pack()
 
+    delite_button = tk.Button(root, text="Очистить", command=lambda: canvas.delete("all"))
+    delite_button.pack(side=tk.RIGHT)
+
     dda_button = tk.Button(root, text="ЦДА", command=lambda: select_algorithm("DDA"))
     dda_button.pack(side=tk.LEFT)
 
-    dda_button = tk.Button(root, text="Брезенхэм", command=lambda: select_algorithm("bresenham"))
-    dda_button.pack(side=tk.LEFT)
+    brasenham_button = tk.Button(root, text="Брезенхэм", command=lambda: select_algorithm("bresenham"))
+    brasenham_button.pack(side=tk.LEFT)
 
-    dda_button = tk.Button(root, text="Ву", command=lambda: select_algorithm("Wu"))
-    dda_button.pack(side=tk.LEFT)
+    wu_button = tk.Button(root, text="Ву", command=lambda: select_algorithm("Wu"))
+    wu_button.pack(side=tk.LEFT)
 
-    dda_button = tk.Button(root, text="Окружность", command=lambda: select_algorithm("circle"))
-    dda_button.pack(side=tk.LEFT)
+    circle_button = tk.Button(root, text="Окружность", command=lambda: select_algorithm("circle"))
+    circle_button.pack(side=tk.LEFT)
 
     debug_button = tk.Button(root, text="Отладка", command=toggle_debug_mode)
     debug_button.pack(side=tk.LEFT)
