@@ -296,184 +296,6 @@ def ellipse_algorithm(canvas):
     file.close()
 
 
-def draw_point(x, y, x1, y1):
-    canvas.create_oval(x, y, x1, y1, fill="black")
-
-
-def calculation_S(x, p, y, direction):
-    if direction == "horizontal":
-        Sd = (y + 1) ** 2 - 2 * p * (x + 1)
-        Sv = (y + 1) ** 2 - 2 * p * x
-        Sh = y ** 2 - 2 * p * (x + 1)
-        return Sd, Sv, Sh
-    elif direction == "vertical":
-        Sd = (x + 1) ** 2 - 2 * p * (y + 1)
-        Sv = (x + 1) ** 2 - 2 * p * y
-        Sh = x ** 2 - 2 * p * (y + 1)
-        return Sd, Sv, Sh
-    elif direction == "default":
-        Sd = y ** 2 - 2 * p * x
-        Sv = y ** 2 - 2 * p * x
-        Sh = y ** 2 - 2 * p * x
-        return Sd, Sv, Sh
-
-
-def parabola_draw():
-    global file_name
-    file_name = "parabola_steps.txt"
-
-    # Перемещение начала координат в центр холста
-
-    x0, y0 = start_point[0], start_point[1]
-    x1, y1 = end_point[0], end_point[1]
-
-    x, y = 0, 0
-
-    p = abs(y0 - y1)
-
-    Sd, Sv, Sh = calculation_S(x, p, y, 'default')
-
-    i = 0
-
-    # if x0 < x1 and y0 > y1:
-    #     draw_point(x0, y0, x0, y0)
-    #     with open("parabola_steps.txt", "a") as file:
-    #         while x + x0 < x1:
-    #             if abs(Sh) - abs(Sv) <= 0:
-    #                 if abs(Sd) - abs(Sh) < 0:
-    #                     y += 1
-    #                 x += 1
-    #             else:
-    #                 if abs(Sv) - abs(Sd) > 0:
-    #                     x += 1
-    #                 y += 1
-    #
-    #             draw_point(x + x0, y + y0, x + x0, y + y0)
-    #             draw_point(x + x0, -y + y0, x + x0, -y + y0)
-    #
-    #             Sd, Sv, Sh = calculation_S(x, p, y, 'horizontal')
-    #
-    #             i += 1
-    #
-    #             file.write(
-    #                 f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-    #     file.close()
-
-    if x0 < x1 and y0 < y1:
-        draw_point(x0, y0, x0, y0)
-        with open("parabola_steps.txt", "a") as file:
-            while x + x0 < x1:
-                if abs(Sh) - abs(Sv) <= 0:
-                    if abs(Sd) - abs(Sh) < 0:
-                        x += 1
-                    y += 1
-                else:
-                    if abs(Sv) - abs(Sd) > 0:
-                        y += 1
-                    x += 1
-
-                draw_point(x + x0, y + y0, x + x0, y + y0)
-                draw_point(-x + x0, y + y0, -x + x0, y + y0)
-
-                Sd, Sv, Sh = calculation_S(x, p, y, 'vertical')
-
-                i += 1
-
-                file.write(
-                    f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-            file.close()
-
-    # elif x0 > x1 and y0 < y1:
-    #     draw_point(x0, y0, x0, y0)
-    #     with open("parabola_steps.txt", "a") as file:
-    #         while y + y0 < y1:
-    #             if abs(Sh) - abs(Sv) <= 0:
-    #                 if abs(Sd) - abs(Sh) < 0:
-    #                     y += 1
-    #                 x += 1
-    #             else:
-    #                 if abs(Sv) - abs(Sd) > 0:
-    #                     x += 1
-    #                 y += 1
-    #
-    #             draw_point(-x + x0, y + y0, -x + x0, y + y0)
-    #             draw_point(-x + x0, -y + y0, -x + x0, -y + y0)
-    #
-    #             Sd, Sv, Sh = calculation_S(x, p, y, 'horizontal')
-    #
-    #             i += 1
-    #
-    #             file.write(
-    #                 f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-    #         file.close()
-
-    elif x0 > x1 and y0 > y1:
-        draw_point(x0, y0, x0, y0)
-        with open("parabola_steps.txt", "a") as file:
-            while -x + x0 > x1:
-                if abs(Sh) - abs(Sv) <= 0:
-                    if abs(Sd) - abs(Sh) < 0:
-                        x += 1
-                    y += 1
-                else:
-                    if abs(Sv) - abs(Sd) > 0:
-                        y += 1
-                    x += 1
-                draw_point(-x + x0, -y + y0, -x + x0, -y + y0)
-                draw_point(x + x0, -y + y0, x + x0, -y + y0)
-
-                Sd, Sv, Sh = calculation_S(x, p, y, 'vertical')
-
-                i += 1
-
-                file.write(
-                    f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-            file.close()
-
-
-def hyperbola_draw():
-    global file_name
-    file_name = "hyperbola_steps.txt"
-
-    x0, y0 = start_point[0], start_point[1]
-    x1, y1 = end_point[0], end_point[1]
-
-    x, y = 0, 0
-
-    p = abs(y0 - y1)
-
-    Sd, Sv, Sh = calculation_S(x, p, y, 'default')
-
-    i = 0
-
-    if x0 < x1 and y0 < y1:
-        draw_point(x0, y0 - 40, x0, y0 - 40)
-        draw_point(x0, y0, x0, y0)
-        with open("hyperbola_steps.txt", "a") as file:
-            while x + x0 < x1 or -x + x0 > x1:
-                if abs(Sh) - abs(Sv) <= 0:
-                    if abs(Sd) - abs(Sh) < 0:
-                        x += 1
-                    y += 1
-                else:
-                    if abs(Sv) - abs(Sd) > 0:
-                        y += 1
-                    x += 1
-
-                draw_point(x + x0, y + y0, x + x0, y + y0)
-                draw_point(-x + x0, y + y0, -x + x0, y + y0)
-                draw_point(-x + x0, -y + y0 - 40, -x + x0, -y + y0 - 40)
-                draw_point(x + x0, -y + y0 - 40, x + x0, -y + y0 - 40)
-
-                Sd, Sv, Sh = calculation_S(x, p, y, 'vertical')
-
-                i += 1
-
-                file.write(
-                    f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-            file.close()
-
-
 def handle_click(event):
     global start_point
     start_point = (event.x, event.y)
@@ -496,10 +318,6 @@ def draw_line_based_on_algorithm(canvas):
         circle_algorithm(canvas)
     elif selected_algorithm == "ellipse":
         ellipse_algorithm(canvas)
-    elif selected_algorithm == "giperbola":
-        hyperbola_draw()
-    elif selected_algorithm == "parabola":
-        parabola_draw()
 
 
 def main():
@@ -528,12 +346,6 @@ def main():
 
     ellipse_button = tk.Button(root, text="Эллипс", command=lambda: select_algorithm("ellipse"))
     ellipse_button.pack(side=tk.LEFT)
-
-    debug_button = tk.Button(root, text="Гипербола", command=lambda: select_algorithm("giperbola"))
-    debug_button.pack(side=tk.LEFT)
-
-    debug_button = tk.Button(root, text="Парабола", command=lambda: select_algorithm("parabola"))
-    debug_button.pack(side=tk.LEFT)
 
     debug_button = tk.Button(root, text="Отладка", command=toggle_debug_mode)
     debug_button.pack(side=tk.LEFT)
