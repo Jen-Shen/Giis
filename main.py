@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
 import math
+from Cube import Cube
 
 # Window dimensions
 WIDTH = 800
@@ -20,7 +21,6 @@ start_velocity = (0, 0)
 end_velocity = (0, 0)
 file = ""
 points = []
-
 
 def select_algorithm(algorithm):
     global selected_algorithm
@@ -325,9 +325,9 @@ def parabola_draw():
 
     # Перемещение начала координат в центр холста
 
-    x0, y0 = start_point[0], start_point[1]
-    x1, y1 = end_point[0], end_point[1]
-    print(x0, y0 , x1, y1)
+    x0, y0 = start_point
+    x1, y1 = end_point
+
     x, y = 0, 0
 
     p = abs(y0 - y1)
@@ -335,30 +335,6 @@ def parabola_draw():
     Sd, Sv, Sh = calculation_S(x, p, y, 'default')
 
     i = 0
-
-    # if x0 < x1 and y0 > y1:
-    #     draw_point(x0, y0, x0, y0)
-    #     with open("parabola_steps.txt", "a") as file:
-    #         while x + x0 < x1:
-    #             if abs(Sh) - abs(Sv) <= 0:
-    #                 if abs(Sd) - abs(Sh) < 0:
-    #                     y += 1
-    #                 x += 1
-    #             else:
-    #                 if abs(Sv) - abs(Sd) > 0:
-    #                     x += 1
-    #                 y += 1
-    #
-    #             draw_point(x + x0, y + y0, x + x0, y + y0)
-    #             draw_point(x + x0, -y + y0, x + x0, -y + y0)
-    #
-    #             Sd, Sv, Sh = calculation_S(x, p, y, 'horizontal')
-    #
-    #             i += 1
-    #
-    #             file.write(
-    #                 f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-    #     file.close()
 
     if x0 < x1 and y0 < y1:
         draw_point(x0, y0, x0, y0)
@@ -383,30 +359,6 @@ def parabola_draw():
                 file.write(
                     f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
             file.close()
-
-    # elif x0 > x1 and y0 < y1:
-    #     draw_point(x0, y0, x0, y0)
-    #     with open("parabola_steps.txt", "a") as file:
-    #         while y + y0 < y1:
-    #             if abs(Sh) - abs(Sv) <= 0:
-    #                 if abs(Sd) - abs(Sh) < 0:
-    #                     y += 1
-    #                 x += 1
-    #             else:
-    #                 if abs(Sv) - abs(Sd) > 0:
-    #                     x += 1
-    #                 y += 1
-    #
-    #             draw_point(-x + x0, y + y0, -x + x0, y + y0)
-    #             draw_point(-x + x0, -y + y0, -x + x0, -y + y0)
-    #
-    #             Sd, Sv, Sh = calculation_S(x, p, y, 'horizontal')
-    #
-    #             i += 1
-    #
-    #             file.write(
-    #                 f"Step {i}, x:{x}, y:{y}, Plot({x + x0},{y + y0})\n")
-    #         file.close()
 
     elif x0 > x1 and y0 > y1:
         draw_point(x0, y0, x0, y0)
@@ -582,6 +534,10 @@ def v_spline_algorithm(canvas):
         i += 1
 
 
+def animate():
+    cube.show_cube_options(root, start_point)
+
+
 def handle_click(event):
     global start_point
     start_point = (event.x, event.y)
@@ -627,16 +583,20 @@ def draw_line_based_on_algorithm(canvas):
         bezie_algoritm(canvas)
     elif selected_algorithm == "vspline":
         v_spline_algorithm(canvas)
+    elif selected_algorithm == "cube":
+        animate()
 
 
 def main():
-    global canvas, file
+    global canvas, file, root, cube
 
     root = tk.Tk()
     root.title("Графический редактор")
 
     canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg=BG_COLOR)
     canvas.pack()
+
+    cube = Cube(canvas)
 
     delite_button = tk.Button(text="Очистить", command=lambda: canvas.delete("all"))
     delite_button.pack(side=tk.RIGHT)
@@ -671,8 +631,11 @@ def main():
     vspline_button = tk.Button(root, text="В-сплайн", command=lambda: select_algorithm("vspline"))
     vspline_button.pack(side=tk.LEFT)
 
+    cube_button = tk.Button(root, text="Куб", command=lambda: select_algorithm("cube"))
+    cube_button.pack(side=tk.LEFT)
+
     debug_button = tk.Button(root, text="Отладка", command=toggle_debug_mode)
-    debug_button.pack(side=tk.LEFT)
+    debug_button.pack(side=tk.RIGHT)
 
     canvas.bind("<Button-3>", handle_click_3)
     canvas.bind("<ButtonRelease-3>", handle_release_3)
